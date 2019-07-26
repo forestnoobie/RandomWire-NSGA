@@ -1,0 +1,8 @@
+adabound
+numpy
+pyyaml
+tensorboardX
+tensorflow
+torch
+torchvision
+tqdm
