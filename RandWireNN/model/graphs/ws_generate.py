@@ -16,9 +16,12 @@ if __name__ == '__main__':
 
     parser.add_argument('-f', '--file_num', type=int, required=True, default=1,
                         help="number of files to generate")
+    ## Double Check the saving path
+    parser.add_argument('-s', '--save_path', type=str, default='D:/skt/rw_ga/graphs/ga_initials',
+                        help="Save path")
 
     args = parser.parse_args()
-    n, k, p, file_num = args.n_nodes, args.k_neighbors, args.prob, args.file_num
+    n, k, p, file_num, save_path = args.n_nodes, args.k_neighbors, args.prob, args.file_num, args.save_path
 
     assert k % 2 == 0, "k must be even."
     assert 0 < k < n, "k must be larger than 0 and smaller than n."
@@ -54,9 +57,9 @@ if __name__ == '__main__':
 
         edges.sort()
 
-        os.makedirs('ga_initials', exist_ok=True)
-        file_name = args.out_txt + "_" + str(num)
-        with open(os.path.join('ga_initials', file_name), 'w') as f:
+        os.makedirs(save_path, exist_ok=True)
+        file_name = args.out_txt + "_" + str(num) +  '.txt'
+        with open(os.path.join(save_path, file_name), 'w') as f:
             f.write(str(n) + '\n')
             f.write(str(len(edges)) + '\n')
             for edge in edges:
