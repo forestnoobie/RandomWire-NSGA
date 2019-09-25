@@ -1,0 +1,106 @@
+!!python/object:networkx.classes.graph.Graph
+_adj:
+  0:
+    2: &id001 {}
+    4: &id002 {}
+    6: &id005 {}
+    8: &id012 {}
+    9: &id013 {}
+    10: &id015 {}
+    15: &id028 {}
+  1:
+    11: &id018 {}
+    14: &id025 {}
+  2:
+    0: *id001
+    7: &id009 {}
+    12: &id021 {}
+  3:
+    4: &id003 {}
+    5: &id004 {}
+    6: &id006 {}
+    7: &id010 {}
+  4:
+    0: *id002
+    3: *id003
+    6: &id007 {}
+  5:
+    3: *id004
+    6: &id008 {}
+    7: &id011 {}
+    15: &id029 {}
+  6:
+    0: *id005
+    3: *id006
+    4: *id007
+    5: *id008
+    11: &id019 {}
+    12: &id022 {}
+  7:
+    2: *id009
+    3: *id010
+    5: *id011
+    10: &id016 {}
+    14: &id026 {}
+  8:
+    0: *id012
+    9: &id014 {}
+    10: &id017 {}
+  9:
+    0: *id013
+    8: *id014
+    11: &id020 {}
+  10:
+    0: *id015
+    7: *id016
+    8: *id017
+    13: &id024 {}
+  11:
+    1: *id018
+    6: *id019
+    9: *id020
+    12: &id023 {}
+  12:
+    2: *id021
+    6: *id022
+    11: *id023
+    15: &id030 {}
+  13:
+    10: *id024
+    14: &id027 {}
+    15: &id031 {}
+  14:
+    1: *id025
+    7: *id026
+    13: *id027
+    15: &id032 {}
+  15:
+    0: *id028
+    5: *id029
+    12: *id030
+    13: *id031
+    14: *id032
+_node:
+  0: {}
+  1: {}
+  2: {}
+  3: {}
+  4: {}
+  5: {}
+  6: {}
+  7: {}
+  8: {}
+  9: {}
+  10: {}
+  11: {}
+  12: {}
+  13: {}
+  14: {}
+  15: {}
+adjlist_inner_dict_factory: &id033 !!python/name:builtins.dict ''
+adjlist_outer_dict_factory: *id033
+edge_attr_dict_factory: *id033
+graph: {}
+graph_attr_dict_factory: *id033
+node_attr_dict_factory: *id033
+node_dict_factory: *id033
