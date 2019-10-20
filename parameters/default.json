@@ -1,0 +1,30 @@
+{
+    "NAME": "BASIC_long",
+    "ARGS_TRAIN" : {
+        "data":"CIFAR10",
+        "num_classes" : 10,
+        "lr_mode": "cosine",
+        "warmup_mode": "linear",    
+        "base_lr": 0.1,
+        "momentum": 0.9, 
+        "weight_decay": 0.00005,
+        "print_freq": 100,
+        "epochs": 1,
+        "batch_size": 32,  
+        "workers": 4,
+        "warmup_epochs": 0,
+        "warmup_lr": 0.0,
+        "targetlr": 0.0
+
+    },
+
+    "DATA_PATH" : "D:/data/cifar10/",
+    "RUN_CODE" : "test_kyy_CIFAR10_time_check",
+    "NUM_GRAPH" : 100 ,
+
+    "POP_SIZE":4 ,
+    "NGEN":1,
+    "CXPB":0.5 ,
+    "MUTPB":0.5 
+
+}

@@ -28,10 +28,19 @@ from utils_kyy.utils_graph import load_graph
 from utils_kyy.models import RWNN
 from utils_kyy.train_validate import train, validate
 from utils_kyy.lr_scheduler import LRScheduler
+from torchsummary import summary
 # -------------------------------------------------
 
+## For MNIST
+class ReshapeTransform:
+    def __init__(self, new_size):
+        self.new_size = new_size
+
+    def __call__(self, img):
+        return torch.reshape(img, self.new_size)
+
 # create the toolbox with the right parameters
-def create_toolbox_for_NSGA_RWNN(num_graph, args_train, stage_pool_path, log_file_name=None):
+def create_toolbox_for_NSGA_RWNN(num_graph, args_train, stage_pool_path, data_path=None ,log_file_name=None):
     # => Min ( -val_accuracy(top_1),  flops )
     creator.create('FitnessMin', base.Fitness, weights=(-1.0, -1.0 ))  # name, base (class), attribute // 
     creator.create('Individual', list, fitness=creator.FitnessMin)  # creator.FitnessMaxMin attribute로 가짐    
@@ -69,7 +78,7 @@ def create_toolbox_for_NSGA_RWNN(num_graph, args_train, stage_pool_path, log_fil
     
     # evaluate
     toolbox.register('evaluate', evaluate,
-                    args_train=args_train, stage_pool_path=stage_pool_path, log_file_name=log_file_name)
+                    args_train=args_train, stage_pool_path=stage_pool_path,data_path=data_path ,log_file_name=log_file_name)
     
     return toolbox
 
@@ -124,7 +133,7 @@ def mutUniformInt_custom(individual, low, up, indpb):
     3) return flops, val_accuracy
 
 """
-def evaluate(individual, args_train, stage_pool_path, channels=109, log_file_name=None):  # individual
+def evaluate(individual, args_train, stage_pool_path, data_path=None ,channels=109, log_file_name=None):  # individual
     # list 형식의 individual 객체를 input으로 받음   e.g. [0, 4, 17] 
     # 1) load graph
     total_graph_path = glob.glob(stage_pool_path + '*.yaml')    # list
@@ -140,17 +149,20 @@ def evaluate(individual, args_train, stage_pool_path, channels=109, log_file_nam
 
     # 2) build RWNN
     channels = channels
-    NN_model = RWNN(net_type='small', graphs=graphs, channels=channels)
+    NN_model = RWNN(net_type='small', graphs=graphs, channels=channels, num_classes=args_train.num_classes, input_channel=args_train.input_dim)
     NN_model.cuda()
-    
+
     ###########################
     # Flops 계산 - [Debug] nn.DataParallele (for multi-gpu) 적용 전에 확인.
     ###########################
-    input_flops = torch.randn(1, 3, 224, 224).cuda()
+    input_flops = torch.randn(1, args_train.input_dim, 224, 224).cuda()
     flops, params = profile(NN_model, inputs=(input_flops, ), verbose=False)
-    
-    # 3) Prepare for train
-    NN_model = nn.DataParallel(NN_model)  # for multi-GPU
+
+    ## Model summary
+    #summary(NN_model, input_size=(1, 224, 224))
+
+    # 3) Prepare for train### 일단 꺼보자!
+    #NN_model = nn.DataParallel(NN_model)  # for multi-GPU
     
     # define loss function (criterion) and optimizer
     criterion = nn.CrossEntropyLoss().cuda()
@@ -167,29 +179,55 @@ def evaluate(individual, args_train, stage_pool_path, channels=109, log_file_nam
     ###########################
     # Dataset & Dataloader
     ###########################
-    train_transform = transforms.Compose(
-        [
-            transforms.RandomHorizontalFlip(),   # 추가함
-            transforms.Resize(224),    # 추가함.  imagenet dataset과 size 맞추기
-            transforms.ToTensor(),
-            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))  # rescale 0 ~ 1 => -1 ~ 1
-        ])
-
-    val_transform = transforms.Compose(
-        [
-            transforms.Resize(224),    # 추가함.  imagenet dataset과 size 맞추기
-            transforms.ToTensor(),
-            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))  # rescale 0 ~ 1 => -1 ~ 1
-        ])
 
 
     # 이미 다운 받아놨으니 download=False
     # 데이터가 없을 경우, 처음엔느 download=True 로 설정해놓고 실행해주어야함
-    train_dataset = torchvision.datasets.CIFAR10(root='./data', train=True,
-                                            download=False, transform=train_transform)
+    
+    if data_path is None :
+        data_path = './data'
+    
+ 
+    if args_train.data == "CIFAR10" :
 
-    val_dataset = torchvision.datasets.CIFAR10(root='./data', train=False,
-                                           download=False, transform=val_transform)
+        train_transform = transforms.Compose(
+            [
+                transforms.RandomHorizontalFlip(),  # 추가함
+                transforms.Resize(224),  # 추가함.  imagenet dataset과 size 맞추기
+                transforms.ToTensor(),
+                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))  # rescale 0 ~ 1 => -1 ~ 1
+            ])
+
+        val_transform = transforms.Compose(
+            [
+                transforms.Resize(224),  # 추가함.  imagenet dataset과 size 맞추기
+                transforms.ToTensor(),
+                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))  # rescale 0 ~ 1 => -1 ~ 1
+            ])
+
+        train_dataset = torchvision.datasets.CIFAR10(root=data_path, train=True,
+                                                download=True, transform=train_transform)
+
+        val_dataset = torchvision.datasets.CIFAR10(root=data_path, train=False,
+                                               download=True, transform=val_transform)
+    elif args_train.data == "MNIST":
+
+        train_transform =  transforms.Compose([
+                                               transforms.Resize(224),
+                                                transforms.ToTensor(),  # 추가함.  imagenet dataset과 size 맞추기
+                                               transforms.Normalize((0.5,), (1.0,)),
+
+            ])
+        val_transform = transforms.Compose([transforms.Resize(224),
+                                            transforms.ToTensor(),# 추가함.  imagenet dataset과 size 맞추기
+                                            transforms.Normalize((0.5,), (1.0,))
+            ])
+        train_dataset = torchvision.datasets.MNIST(root=data_path, train=True, transform=train_transform, download=True)
+        val_dataset = torchvision.datasets.MNIST(root=data_path, train=False, transform=val_transform, download=True)
+        
+    else :
+        raise Exception("Data Error, Only CIFAR10, MNIST allowed for the moment")
+
 
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=args_train.batch_size,
                                               shuffle=True, num_workers=args_train.workers)  

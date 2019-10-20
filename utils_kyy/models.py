@@ -109,10 +109,12 @@ class StageBlock(nn.Module):
 # channels = 109
 
 class RWNN(nn.Module):
-    def __init__(self, net_type, graphs, channels, num_classes=1000):
+    def __init__(self, net_type, graphs, channels, num_classes=1000,input_channel=3):
         super(RWNN, self).__init__()
+
+        self.input_channel = input_channel
         # 논문에서도 conv1 쪽은 예외적으로 Conv-BN 이라고 언급함. (나머지에서는 Conv-ReLU-BN 을 conv 로 표기) 
-        self.conv1 = depthwise_separable_conv_3x3(3, channels // 2, 2)    # nin, nout, stride
+        self.conv1 = depthwise_separable_conv_3x3(input_channel, channels // 2, 2)    # nin, nout, stride
         self.bn1 = nn.BatchNorm2d(channels // 2)
     
         # 채널수 변화도, 논문에서처럼 conv2: C, conv3: 2C, conv4: 4C, conv5: 8C    
@@ -143,15 +145,27 @@ class RWNN(nn.Module):
         
         
     def forward(self, x):
+        #print("==========Data Size", x.size())
         x = self.conv1(x)
         x = self.bn1(x)
+        #print("==========Conv1 Size", x.size())
 
         x = self.conv2(x)
+        #print("==========Conv2  Size", x.size())
+
         x = self.conv3(x)
+        #print("==========Conv3  Size", x.size())
+
         x = self.conv4(x)
+        #print("==========Conv4  Size", x.size())
+
         x = self.conv5(x)
+        #print("==========Conv5  Size", x.size())
+
         x = self.relu(x)
         x = self.conv(x)
+        #print("==========Conv6  Size", x.size())
+
         x = self.bn2(x)
         x = self.relu(x)
 

@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b6806aea-1eb6-4969-99b9-ab0ce372f19f" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../04_NSGA_RWNN_basic.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/../04_NSGA_RWNN_basic.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../06_NSGA_RWNN_cifar10_time_experiment.ipynb" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../utils_kyy/create_toolbox.py" beforeDir="false" afterPath="$PROJECT_DIR$/../utils_kyy/create_toolbox.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -19,8 +21,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/ga_utils/ga.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="339">
-              <caret line="197" lean-forward="true" selection-start-line="197" selection-end-line="197" />
+            <state relative-caret-position="76">
+              <caret line="197" selection-start-line="197" selection-end-line="197" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -31,7 +33,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/model/graphs/ws_generate.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="391">
+            <state relative-caret-position="1083">
               <caret line="60" column="58" selection-start-line="60" selection-start-column="58" selection-end-line="60" selection-end-column="58" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
@@ -85,20 +87,11 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/utils/evaluation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="304">
+            <state relative-caret-position="247">
               <caret line="16" column="63" selection-start-line="16" selection-start-column="63" selection-end-line="16" selection-end-column="63" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/config/config.yaml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="608">
-              <caret line="32" column="30" selection-start-line="32" selection-start-column="30" selection-end-line="32" selection-end-column="30" />
             </state>
           </provider>
         </entry>
@@ -167,11 +160,11 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="1">
-    <option name="x" value="541" />
-    <option name="y" value="170" />
-    <option name="width" value="1215" />
-    <option name="height" value="860" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="346" />
+    <option name="y" value="108" />
+    <option name="width" value="973" />
+    <option name="height" value="688" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -179,7 +172,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -216,6 +208,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -272,11 +265,12 @@
       <workItem from="1563792525942" duration="717000" />
       <workItem from="1564026600638" duration="8503000" />
       <workItem from="1564556191019" duration="3348000" />
+      <workItem from="1570004869379" duration="255000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="72076000" />
+    <option name="totallyTimeSpent" value="72331000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -288,10 +282,9 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="433" y="136" width="972" height="688" extended-state="1" />
-    <editor active="true" />
+    <frame x="277" y="87" width="778" height="550" extended-state="0" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4972973" visible="true" weight="0.12719299" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4972973" visible="true" weight="0.1643454" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" sideWeight="0.5027027" side_tool="true" weight="0.12719299" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -304,7 +297,7 @@
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" weight="0.3274918" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
-      <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
+      <window_info active="true" anchor="bottom" id="Event Log" order="10" side_tool="true" visible="true" weight="0.32853717" />
       <window_info anchor="bottom" id="Terminal" order="11" weight="0.27207208" />
       <window_info anchor="bottom" id="Python Console" order="12" weight="0.32462686" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -475,6 +468,34 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/../../../temp/torch_test.py" />
     <entry file="file://$PROJECT_DIR$/Untitled_deap.ipynb" />
+    <entry file="file://$PROJECT_DIR$/config/config.yaml" />
+    <entry file="file://$PROJECT_DIR$/ga_utils/ga.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="76">
+          <caret line="197" selection-start-line="197" selection-end-line="197" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/model/graphs/ws_generate.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1083">
+          <caret line="60" column="58" selection-start-line="60" selection-start-column="58" selection-end-line="60" selection-end-column="58" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trainer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="9" selection-start-column="9" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/utils/train.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1140">
@@ -502,10 +523,13 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/config/config.yaml">
+    <entry file="file://$PROJECT_DIR$/utils/evaluation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="608">
-          <caret line="32" column="30" selection-start-line="32" selection-start-column="30" selection-end-line="32" selection-end-column="30" />
+        <state relative-caret-position="247">
+          <caret line="16" column="63" selection-start-line="16" selection-start-column="63" selection-end-line="16" selection-end-column="63" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -515,43 +539,6 @@
           <caret line="126" column="48" selection-start-line="126" selection-start-column="48" selection-end-line="126" selection-end-column="48" />
           <folding>
             <element signature="e#116#154#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/model/graphs/ws_generate.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="60" column="58" selection-start-line="60" selection-start-column="58" selection-end-line="60" selection-end-column="58" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/trainer.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="9" selection-start-column="9" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/utils/evaluation.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="304">
-          <caret line="16" column="63" selection-start-line="16" selection-start-column="63" selection-end-line="16" selection-end-column="63" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ga_utils/ga.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="339">
-          <caret line="197" lean-forward="true" selection-start-line="197" selection-end-line="197" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>
