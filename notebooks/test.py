@@ -12,11 +12,13 @@ from collections import OrderedDict
 from pprint import pprint
 import json
 import torch
+from copy import deepcopy
 
 sys.path.insert(0, '../')
 from utils_kyy.utils_graph import make_random_graph
 from utils_kyy.create_toolbox import create_toolbox_for_NSGA_RWNN
 from utils_kyy.create_toolbox import evaluate
+from utils_kyy.utils_graycode import *
 
 
 class rwns_train:
@@ -93,6 +95,9 @@ class rwns_train:
         if self.toolbox is None:
             self.toolbox = self.create_toolbox()
 
+        if self.args_train.graycode:
+            gray_len = len(str(grayCode(self.num_graph)))
+
         toolbox = self.toolbox
 
         # log에 기록할 stats
@@ -124,7 +129,18 @@ class rwns_train:
         invalid_ind = [ind for ind in pop if not ind.fitness.valid]
         # fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)  # .evaluate는 tuple을 반환. 따라서 fitnesses는 튜플을 원소로 가지는 list
 
+        #         checked_ind = []
         for idx, ind in enumerate(invalid_ind):
+
+            #             if self.args_train.graycode:
+            #                 for k in range(3):
+            #                     checked_ind.extend(check_Upper(ind[gray_len*k:gray_len*(k+1)],self.num_graph))
+
+            #                 print("Check_ind",checked_ind)
+            #                 print("Check_ind",ind)
+            #                 ind = deepcopy(checked_ind)
+
+            # print("ind",ind)
             fitness, ind_model = evaluate(ind, args_train=self.args_train, stage_pool_path=self.stage_pool_path,
                                           data_path=self.data_path, log_file_name=self.log_file_name)
             ind.fitness.values = fitness
@@ -201,7 +217,16 @@ class rwns_train:
 
             invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
 
+            check_ind = []
+
             for idx, ind in enumerate(invalid_ind):
+
+                #                 if self.args_train.graycode:
+                #                     for k in range(3):
+                #                         checked_ind.extend(check_Upper(ind[gray_len*k:gray_len*(k+1)],self.num_graph))
+
+                #                     ind = deepcopy(checked_ind)
+
                 fitness, ind_model = evaluate(ind, args_train=self.args_train, stage_pool_path=self.stage_pool_path,
                                               data_path=self.data_path, log_file_name=self.log_file_name)
                 ind.fitness.values = fitness

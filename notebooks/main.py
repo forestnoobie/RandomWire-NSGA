@@ -18,6 +18,7 @@ from utils_kyy.utils_graph import make_random_graph
 from utils_kyy.create_toolbox import create_toolbox_for_NSGA_RWNN
 from utils_kyy.create_toolbox import evaluate
 
+import argparse
 
 class rwns_train:
     def __init__(self, json_file):
@@ -262,3 +263,13 @@ class rwns_train:
         model_path = os.path.join(self.model_dir, model_fname)
         print("Saving Model", model_path)
         torch.save(model, model_path)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--params', type=str, help='Parameter Json file')
+    args = parser.parse_args()
+    trainer = rwns_train(json_file=args.params)
+    trainer.create_toolbox()
+    trainer.train()
+    trainer.save_log()

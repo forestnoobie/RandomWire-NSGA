@@ -53,7 +53,7 @@ def create_toolbox_for_NSGA_RWNN(num_graph, args_train, stage_pool_path, data_pa
     #####################################
     toolbox = base.Toolbox()
     if args_train.graycode :
-        gray_len = len(str(grayCode(num_graph)))
+        gray_len = len(str(grayCode(num_graph-1)))
         IND_SIZE = gray_len * 3
         BOUND_LOW = 0
         BOUND_UP = 1
@@ -192,7 +192,7 @@ def evaluate(individual, args_train, stage_pool_path, data_path=None ,channels=1
     #summary(NN_model, input_size=(1, 224, 224))
 
     # 3) Prepare for train### 일단 꺼보자!
-    #NN_model = nn.DataParallel(NN_model)  # for multi-GPU
+    NN_model = nn.DataParallel(NN_model)  # for multi-GPU
     
     # define loss function (criterion) and optimizer
     criterion = nn.CrossEntropyLoss().cuda()
@@ -269,7 +269,7 @@ def evaluate(individual, args_train, stage_pool_path, data_path=None ,channels=1
     # Train
     ###########################
     niters = len(train_loader)
-    niters = 1
+    #niters = 1
 
     lr_scheduler = LRScheduler(optimizer, niters, args_train)  # (default) args.step = [30, 60, 90], args.decay_factor = 0.1, args.power = 2.0    
     
