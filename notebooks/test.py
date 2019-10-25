@@ -11,25 +11,31 @@ from deap import tools
 from collections import OrderedDict
 from pprint import pprint
 import json
+import torch
 
 sys.path.insert(0, '../')
 from utils_kyy.utils_graph import make_random_graph
 from utils_kyy.create_toolbox import create_toolbox_for_NSGA_RWNN
+from utils_kyy.create_toolbox import evaluate
 
 
 class rwns_train:
     def __init__(self, json_file):
-        #self.root = os.path.abspath(os.path.join(os.getcwd(), '..'))
-        self.root = os.getcwd()
+        self.root = os.path.abspath(os.path.join(os.getcwd(), '..'))
+        # self.root = os.getcwd()
         self.param_dir = os.path.join(self.root + '/parameters/', json_file)
-        self.log_dir = os.path.join(self.root, 'log')
-
         f = open(self.param_dir)
         params = json.load(f)
-
         pprint(params)
-
         self.name = params['NAME']
+        self.log_dir = os.path.join(self.root, 'log')
+        self.model_dir = os.path.join(self.root + '/saved_models/', self.name)
+
+        # create directory
+        if not (os.path.isdir(self.model_dir)):
+            os.makedirs(self.model_dir)
+        if not (os.path.isdir(self.log_dir)):
+            os.makedirs(self.log_dir)
 
         ## toolbox params
         self.args_train = EasyDict(params['ARGS_TRAIN'])
@@ -53,7 +59,8 @@ class rwns_train:
         self.log = log
         self.train_log = None
 
-    ## tool box and make graph
+        ## tool box and make graph
+
     def create_toolbox(self):
         self.stage_pool_path = '../graph_pool' + '/' + self.run_code + '/'
         self.log_path = '../logs/' + self.run_code + '_' + self.name + '/'
@@ -105,20 +112,41 @@ class rwns_train:
 
         pop = toolbox.population(n=POP_SIZE)
 
-        ## fitness list
+        ## fitness, model list
         fit_list = []
+        model_list = []
+
+        local_min_fit1 = float('inf')
+        local_min_fit2 = float('inf')
+        local_min_index = [None, None]
 
         # Evaluate the individuals with an invalid fitness
         invalid_ind = [ind for ind in pop if not ind.fitness.valid]
-        fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)  # .evaluate는 tuple을 반환. 따라서 fitnesses는 튜플을 원소로 가지는 list
-        for ind, fit in zip(invalid_ind, fitnesses):
-            ind.fitness.values = fit  # ind.fitness.values = (val_accuracy, flops) 튜플
-            fit_list.append(fit)
+        # fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)  # .evaluate는 tuple을 반환. 따라서 fitnesses는 튜플을 원소로 가지는 list
+
+        for idx, ind in enumerate(invalid_ind):
+            fitness, ind_model = evaluate(ind, args_train=self.args_train, stage_pool_path=self.stage_pool_path,
+                                          data_path=self.data_path, log_file_name=self.log_file_name)
+            ind.fitness.values = fitness
+            fit_list.append(fitness)
+            model_list.append(ind_model)
+
+            if fitness[0] < local_min_fit1:
+                local_min_fit1 = fitness[0]
+                local_min_index[0] = idx
+
+            if fitness[1] < local_min_fit2:
+                local_min_fit2 = fitness[1]
+                local_min_index[1] = idx
+
+        ## index ckpt download
+        print("#### Saving Model", local_min_index)
+        self.save_model(model=model_list[local_min_index[0]], ngen=0, subname=str(0) + '_' + 'acc')
+        self.save_model(model=model_list[local_min_index[1]], ngen=0, subname=str(0) + '_' + 'flops')
 
         ## log 기록
         train_log[0] = fit_list
         self.train_log = train_log
-        print(train_log)
 
         # This is just to assign the crowding distance to the individuals
         # no actual selection is done
@@ -162,29 +190,36 @@ class rwns_train:
             print("##### Evaluation starts")
             start_time = time.time()
 
-            ## fitness value 모음
+            ## fitness value : accuracy ,flops 모음
             fit_list = []
+            model_listist = []
 
-            ## 가장 최소 fitnesss value1,2 구하기
+            ## 가장 최소 1,2 구하기
             local_min_fit1 = float('inf')
             local_min_fit2 = float('inf')
             local_min_index = [None, None]
 
             invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
-            fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
-            for ind, fit in zip(invalid_ind, fitnesses):
-                ind.fitness.values = fit
-                fit_list.append(fit)
 
-                if fit[0] < local_min_fit1:
-                    local_min_fit1 = fit[0]
-                    local_min_index[0] = ind
+            for idx, ind in enumerate(invalid_ind):
+                fitness, ind_model = evaluate(ind, args_train=self.args_train, stage_pool_path=self.stage_pool_path,
+                                              data_path=self.data_path, log_file_name=self.log_file_name)
+                ind.fitness.values = fitness
+                fit_list.append(fitness)
+                model_list.append(ind_model)
 
-                if fit[1] < local_min_fit2:
-                    local_min_fit2 = fit[1]
-                    local_min_index[1] = ind
+                if fitness[0] < local_min_fit1:
+                    local_min_fit1 = fitness[0]
+                    local_min_index[0] = idx
+
+                if fitness[1] < local_min_fit2:
+                    local_min_fit2 = fitness[1]
+                    local_min_index[1] = idx
 
             ## index ckpt download
+            print("#### Saving Model", local_min_index)
+            self.save_model(model=model_list[local_min_index[0]], ngen=gen, subname=str(gen) + '_' + 'acc')
+            self.save_model(model=model_list[local_min_index[1]], ngen=gen, subname=str(gen) + '_' + 'flops')
 
             ## log 기록
             train_log[gen] = fit_list
@@ -204,7 +239,7 @@ class rwns_train:
                            evals_time=eval_time_for_one_generation, gen_time=gen_time)
 
             logging.info('Gen [%03d/%03d] -- evals: %03d, evals_time: %.4fs, gen_time: %.4fs' % (
-            gen, self.ngen, len(invalid_ind), eval_time_for_one_generation, gen_time))
+                gen, self.ngen, len(invalid_ind), eval_time_for_one_generation, gen_time))
             print(logbook.stream)
 
     ## Save Check point
@@ -214,16 +249,16 @@ class rwns_train:
 
         log = self.log
 
-        ## 필요한 log 추후 정리하여 추가
+        ## 필요한 log 추후 정리하여 추l가
         log['train_log'] = self.train_log
 
         with open(self.train_log_file_name, 'w', encoding='utf-8') as make_file:
             json.dump(log, make_file, ensure_ascii=False, indent='\t')
 
+    ## Save Model
+    def save_model(self, model, ngen, subname):
 
-
-if __name__ == '__main__':
-    mnist_test = rwns_train("MNIST_TEST.json")
-    mnist_test.create_toolbox()
-    mnist_test.train()
-    mnist_test.save_log()
+        model_fname = self.name + '_' + str(ngen) + '_' + subname
+        model_path = os.path.join(self.model_dir, model_fname)
+        print("Saving Model", model_path)
+        torch.save(model, model_path)

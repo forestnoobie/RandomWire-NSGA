@@ -23,6 +23,9 @@ from thop import clever_format
 
 import logging
 
+# Gray code package
+from utils_kyy.utils_graycode import *
+
 # custom package in utils_kyy
 from utils_kyy.utils_graph import load_graph
 from utils_kyy.models import RWNN
@@ -49,17 +52,23 @@ def create_toolbox_for_NSGA_RWNN(num_graph, args_train, stage_pool_path, data_pa
     # Initialize the toolbox
     #####################################
     toolbox = base.Toolbox()
-    
-    IND_SIZE = 3    # 한 individual, 즉 하나의 chromosome은 3개의 graph. 즉, 3개의 stage를 가짐.
+    if args_train.graycode :
+        gray_len = len(str(grayCode(num_graph)))
+        IND_SIZE = gray_len * 3
+        BOUND_LOW = 0
+        BOUND_UP = 1
+        toolbox.register('attr_int', random.randint, BOUND_LOW, BOUND_UP)
 
-    # toolbox.attribute(0, (num_graph-1)) 이렇게 사용함.
-    # 즉, 0 ~ (num_grpah - 1) 중 임의의 정수 선택. => 이걸 3번하면 하나의 small graph가 생김
-    BOUND_LOW = 0
-    BOUND_UP = num_graph-1
-    toolbox.register('attr_int', random.randint, BOUND_LOW, BOUND_UP)   # register(alias, method, argument ...)
+    else:
+        IND_SIZE = 3    # 한 individual, 즉 하나의 chromosome은 3개의 graph. 즉, 3개의 stage를 가짐.
 
-    # toolbox.attribute라는 함수를 n번 시행해서 containter인 creator.individual에 넣은 후 해당 instance를 반환함.
-    # e.g. [0, 1, 3] 반환
+        # toolbox.attribute(0, (num_graph-1)) 이렇게 사용함.
+        # 즉, 0 ~ (num_grpah - 1) 중 임의의 정수 선택. => 이걸 3번하면 하나의 small graph가 생김
+        BOUND_LOW = 0
+        BOUND_UP = num_graph-1
+        toolbox.register('attr_int', random.randint, BOUND_LOW, BOUND_UP)   # register(alias, method, argument ...)
+        # toolbox.attribute라는 함수를 n번 시행해서 containter인 creator.individual에 넣은 후 해당 instance를 반환함.
+        # e.g. [0, 1, 3] 반환
     toolbox.register('individual', tools.initRepeat,
                      creator.Individual, toolbox.attr_int, n=IND_SIZE)
 
@@ -67,7 +76,10 @@ def create_toolbox_for_NSGA_RWNN(num_graph, args_train, stage_pool_path, data_pa
                      list, toolbox.individual)    # n은 생략함. toolbox.population 함수를 뒤에서 실행할 때 넣어줌.    
     
     # crossover
-    toolbox.register('mate', tools.cxTwoPoint)  # crossover
+    if args_train.graycode :
+        toolbox.register('mate', cxgray, num_graph=num_graph)
+    else:
+        toolbox.register('mate', tools.cxTwoPoint)  # crossover
 
     # mutation
     toolbox.register('mutate', mutUniformInt_custom, low=BOUND_LOW, up=BOUND_UP)
@@ -77,8 +89,8 @@ def create_toolbox_for_NSGA_RWNN(num_graph, args_train, stage_pool_path, data_pa
     toolbox.register('select', tools.selNSGA2, nd='standard')  # selection.  // k – The number of individuals to select. k는 함수 쓸 때 받아야함    
     
     # evaluate
-    toolbox.register('evaluate', evaluate,
-                    args_train=args_train, stage_pool_path=stage_pool_path,data_path=data_path ,log_file_name=log_file_name)
+    # toolbox.register('evaluate', evaluate,
+    #                 args_train=args_train, stage_pool_path=stage_pool_path,data_path=data_path ,log_file_name=log_file_name)
     
     return toolbox
 
@@ -134,13 +146,31 @@ def mutUniformInt_custom(individual, low, up, indpb):
 
 """
 def evaluate(individual, args_train, stage_pool_path, data_path=None ,channels=109, log_file_name=None):  # individual
-    # list 형식의 individual 객체를 input으로 받음   e.g. [0, 4, 17] 
+
+    # list 형식의 individual 객체를 input으로 받음   e.g. [0, 4, 17]
     # 1) load graph
     total_graph_path = glob.glob(stage_pool_path + '*.yaml')    # list
-    
-    stage_1_graph = load_graph(total_graph_path[individual[0]])
-    stage_2_graph = load_graph(total_graph_path[individual[1]])
-    stage_3_graph = load_graph(total_graph_path[individual[2]])
+
+    graph_name = []
+
+    if args_train.graycode:
+        ## Decode 해줘야 !
+        gray_len = len(individual)//3
+        for i in range(3):
+            # list to string
+            tmp = ''
+            for j in individual[gray_len*i:gray_len*(i+1)]:
+                tmp += str(j)
+
+            # sting to binary to num
+            graph_name.append(graydecode(int(tmp)))
+
+    else :
+        graph_name = individual
+
+    stage_1_graph = load_graph(total_graph_path[graph_name[0]])
+    stage_2_graph = load_graph(total_graph_path[graph_name[1]])
+    stage_3_graph = load_graph(total_graph_path[graph_name[2]])
     
     graphs = EasyDict({'stage_1': stage_1_graph,
                        'stage_2': stage_2_graph,
@@ -239,6 +269,7 @@ def evaluate(individual, args_train, stage_pool_path, data_path=None ,channels=1
     # Train
     ###########################
     niters = len(train_loader)
+    niters = 1
 
     lr_scheduler = LRScheduler(optimizer, niters, args_train)  # (default) args.step = [30, 60, 90], args.decay_factor = 0.1, args.power = 2.0    
     
@@ -248,9 +279,10 @@ def evaluate(individual, args_train, stage_pool_path, data_path=None ,channels=1
 
         # evaluate on validation set
         prec1 = validate(val_loader, NN_model, criterion, epoch, log_file_name)
-        
+
         # remember best prec@1 and save checkpoint
 #         is_best = prec1 > best_prec1
         best_prec1 = max(prec1, best_prec1)
-    
-    return -best_prec1, flops   # Min (-val_accuracy, flops) 이므로 val_accuracy(top1)에 - 붙여서 return
+
+
+    return (-best_prec1, flops), NN_model  # Min (-val_accuracy, flops) 이므로 val_accuracy(top1)에 - 붙여서 return

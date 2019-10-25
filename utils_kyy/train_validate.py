@@ -70,6 +70,10 @@ def train(train_loader, model, criterion, optimizer, lr_scheduler, epoch, print_
                   'Prec@5 {top5.val:.3f} ({top5.avg:.3f})'.format(
                 epoch, i, len(train_loader), batch_time=batch_time,
                 loss=losses, top1=top1, top5=top5))
+
+        ## 임시
+        if i == 2 :
+            break
             
 def validate(val_loader, model, criterion, epoch, log_file_name):
     
