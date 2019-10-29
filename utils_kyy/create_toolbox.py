@@ -192,8 +192,8 @@ def evaluate(individual, args_train, stage_pool_path, data_path=None ,channels=1
     #summary(NN_model, input_size=(1, 224, 224))
 
     # 3) Prepare for train### 일단 꺼보자!
-    NN_model = nn.DataParallel(NN_model)  # for multi-GPU
-    
+    #NN_model = nn.DataParallel(NN_model)  # for multi-GPU
+    NN_model = nn.DataParallel(NN_model, device_ids=[0,1,2])
     # define loss function (criterion) and optimizer
     criterion = nn.CrossEntropyLoss().cuda()
 

@@ -89,7 +89,6 @@ def cxgray(ind1, ind2, num_graph):
     for i in range(3):
         temp_ind1 = ind1[gray_len * i:gray_len * (i + 1)]
         temp_ind2 = ind2[gray_len * i:gray_len * (i + 1)]
-        print(temp_ind1)
         if random.random() < 0.7:
             x1, x2 = cxOnePoint(temp_ind1, temp_ind2)
             new_ind1.extend(x1)

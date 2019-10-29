@@ -225,6 +225,8 @@ class rwns_train:
             ## log 기록
             train_log[gen] = fit_list
             self.train_log = train_log
+            self.save_log()
+
 
             eval_time_for_one_generation = time.time() - start_time
             print("##### Evaluation ends (Time : %.3f)" % eval_time_for_one_generation)

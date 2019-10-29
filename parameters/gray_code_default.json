@@ -1,0 +1,32 @@
+{
+    "NAME": "gray_Code_default2",
+    "ARGS_TRAIN" : {
+        "data": "CIFAR10",
+        "num_classes" : 10,
+        "graycode" : true,
+        "input_dim" : 3,
+        "lr_mode": "cosine",
+        "warmup_mode": "linear",    
+        "base_lr": 0.2,
+        "momentum": 0.9, 
+        "weight_decay": 0.00005,
+        "print_freq": 100,
+        "epochs": 5,
+        "batch_size": 160,  
+        "workers": 3,
+        "warmup_epochs": 0,
+        "warmup_lr": 0.0,
+        "targetlr": 0.0
+
+    },
+
+    "DATA_PATH" : "/root/data/kyy/RWNN_NSGA_kyy/data",
+    "RUN_CODE" : "test_kyy_CIFAR10_time_check",
+    "NUM_GRAPH" : 128 ,
+
+    "POP_SIZE":8 ,
+    "NGEN":20,
+    "CXPB":0.5 ,
+    "MUTPB":0.02 
+
+}
