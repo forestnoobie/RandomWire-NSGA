@@ -1,9 +1,9 @@
 {
-    "NAME": "gray_Code_default2",
+    "NAME": "random_ex",
     "ARGS_TRAIN" : {
         "data": "CIFAR10",
         "num_classes" : 10,
-        "graycode" : true,
+        "graycode" : false,
         "input_dim" : 3,
         "lr_mode": "cosine",
         "warmup_mode": "linear",    
@@ -11,7 +11,7 @@
         "momentum": 0.9, 
         "weight_decay": 0.00005,
         "print_freq": 100,
-        "epochs": 5,
+        "epochs": 1,
         "batch_size": 140,  
         "workers": 3,
         "warmup_epochs": 0,
@@ -24,7 +24,7 @@
     "RUN_CODE" : "test_kyy_CIFAR10_time_check",
     "NUM_GRAPH" : 128 ,
 
-    "POP_SIZE":8 ,
+    "POP_SIZE":4 ,
     "NGEN":20,
     "CXPB":0.5 ,
     "MUTPB":0.02 

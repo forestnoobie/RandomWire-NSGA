@@ -1,9 +1,9 @@
 {
-    "NAME": "gray_Code_default2",
+    "NAME": "basic_ga_ex",
     "ARGS_TRAIN" : {
         "data": "CIFAR10",
         "num_classes" : 10,
-        "graycode" : true,
+        "graycode" : false,
         "input_dim" : 3,
         "lr_mode": "cosine",
         "warmup_mode": "linear",    
@@ -13,7 +13,7 @@
         "print_freq": 100,
         "epochs": 5,
         "batch_size": 140,  
-        "workers": 3,
+        "workers": 16,
         "warmup_epochs": 0,
         "warmup_lr": 0.0,
         "targetlr": 0.0
